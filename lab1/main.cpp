@@ -28,7 +28,7 @@ string makeString(int lenth){
  * @param string строка.
  * @param lenth длина исследуемой строки.
  */
-void countRandomChars(string str, int lenth){
+map<char, int> countRandomChars(string str, int lenth){
     map<char, int> charsCount;
     for(int i = 0; i < lenth; i++){
         if(charsCount.find(str[i]) != charsCount.end()){
@@ -37,16 +37,26 @@ void countRandomChars(string str, int lenth){
             charsCount[str[i]] = 1;
         }
     }
-    cout << "Случайная строка: " << str << endl;
+    return charsCount;
+}
+
+/*
+ * Вывод информации о символах
+ *
+ * @param charsCount.
+ * @retrun возвращает мапу симвлов
+ */
+void printMap(map<char, int> charsCount){
     for(const auto& pair : charsCount){
         std::cout << "символ " << pair.first << ": " << pair.second << std::endl;
     }
 }
 
-
 int main(){
     const int LENTH = 10000;
     string str = makeString(LENTH);
-    countRandomChars(str, LENTH);
+    cout << "Случайная строка: " << str << endl;
+    map<char, int> charsCount = countRandomChars(str, LENTH);
+    printMap(charsCount);
     return 0;
 }
