@@ -43,7 +43,7 @@ map<char, int> countRandomChars(string str, int lenth){
 /*
  * Вывод информации о символах
  *
- * @param charsCount.
+ * @param charsCount выводимая мапа символов
  * @retrun возвращает мапу симвлов
  */
 void printMap(map<char, int> charsCount){
