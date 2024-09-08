@@ -27,6 +27,7 @@ string makeString(int lenth){
  *
  * @param string строка.
  * @param lenth длина исследуемой строки.
+ * @return возвращает мапу символов
  */
 map<char, int> countRandomChars(string str, int lenth){
     map<char, int> charsCount;
