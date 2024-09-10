@@ -48,7 +48,7 @@ map<char, int> countRandomChars(string str, int lenth){
  */
 void printMap(map<char, int> charsCount){
     for(const auto& pair : charsCount){
-        std::cout << "символ " << pair.first << ": " << pair.second << std::endl;
+        std::cout << "символ " << pair.first << ": " << pair.second << endl;
     }
 }
 
@@ -58,5 +58,6 @@ int main(){
     cout << "Случайная строка: " << str << endl;
     map<char, int> charsCount = countRandomChars(str, LENTH);
     printMap(charsCount);
+    cout << "rand: " << rand() << endl;
     return 0;
 }
