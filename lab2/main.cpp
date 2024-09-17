@@ -25,8 +25,8 @@ int getNumber(){
  * @param N размер массива (количество строк и столбцов).
  */
 void clearArray(int** array, const int N) {
-    for (int i = 0; i < N; ++i) {
-        for (int j = 0; j < N; ++j) {
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
             array[i][j] = 0;     
         }
     }
@@ -40,7 +40,7 @@ void clearArray(int** array, const int N) {
  */
 int** createArray(const int N) {
     int** array = new int*[N];   
-    for (int i = 0; i < N; ++i) {
+    for (int i = 0; i < N; i++) {
         array[i] = new int[N];   
     }
     clearArray(array, N);
@@ -57,8 +57,8 @@ void printArray(int** array, const int N) {
     cout << "\nМассив:" << endl;
     const int WIDTH = 2; 
 
-    for (int i = 0; i < N; ++i) {
-        for (int j = 0; j < N; ++j) {
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
             cout << "|" << setw(WIDTH) << array[i][j] << " ";
         }
         cout << "|" << endl;
@@ -73,7 +73,7 @@ void printArray(int** array, const int N) {
  * @param N размер массива (количество строк и столбцов).
  */
 void deleteArray(int** array, const int N) {
-    for (int i = 0; i < N; ++i) {
+    for (int i = 0; i < N; i++) {
         delete[] array[i];
     }
     delete[] array;
@@ -88,8 +88,8 @@ void deleteArray(int** array, const int N) {
 void fillMain(int** array, const int N) {
     clearArray(array, N);
 
-    for (int i = 0; i < N; ++i) {
-        for (int j = i; j < N; ++j) {
+    for (int i = 0; i < N; i++) {
+        for (int j = i; j < N; j++) {
             array[i][j] = rand() % 10; 
             array[j][i] = array[i][j]; 
         }
@@ -105,8 +105,8 @@ void fillMain(int** array, const int N) {
 void fillSecond(int** array, const int N) {
     clearArray(array, N);
 
-    for (int i = 0; i < N; ++i) {
-        for (int j = 0; j <= N - i - 1; ++j) {
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j <= N - i - 1; j++) {
             array[i][j] = rand() % 10; 
             array[N - j - 1][N - i - 1] = array[i][j]; 
         }
@@ -122,9 +122,9 @@ void fillSecond(int** array, const int N) {
 void pascalArray(int** array, int N) {
     clearArray(array, N);
 
-    for (int i = 0; i < N; ++i) {
+    for (int i = 0; i < N; i++) {
         array[i][0] = 1;  
-        for (int j = 1; j <= i; ++j) {
+        for (int j = 1; j <= i; j++) {
             if (j == i) {
                 array[i][j] = 1;  
             } else {
@@ -154,8 +154,8 @@ void saperArray(int** array, const int N) {
             minesPlaced++;
 
             // Проход по всем соседним ячейкам
-            for (int x = -1; x <= 1; ++x) {
-                for (int y = -1; y <= 1; ++y) {
+            for (int x = -1; x <= 1; x++) {
+                for (int y = -1; y <= 1; y++) {
                     if (x == 0 && y == 0) continue;
                     int newRow = row + x;
                     int newCol = col + y;
@@ -170,6 +170,7 @@ void saperArray(int** array, const int N) {
 int main(){
     const int N = getNumber();
     int** array = createArray(N);
+    printArray(array, N);
     int choice;
     srand(time(0));
 
