@@ -158,7 +158,7 @@ void convertToRubles(const vector<Banknote> &wallet) {
     cout << "Общая сумма в рублях: " << totalRubles << " руб.\n";
 
     // Массив рублевых номиналов для обмена
-    int rubleDenominations[] = {5000, 2000, 1000, 500, 100, 200, 50, 10, 5, 2, 1};
+    int rubleDenominations[] = {5000, 1000, 500, 100, 50, 10, 5, 2, 1};
     cout << "Сумма набирается из следующих купюр:\n";
 
     // Обмен общей суммы на банкноты максимального номинала
@@ -187,7 +187,7 @@ int main() {
     }
 
     printWallet(wallet);
-    cout << setprecision(2);
+    cout << fixed << setprecision(2);
     cout << "\nОбщая сумма в рублях: " << calculateRubles(wallet) << " руб.\n";
 
     int minDenom = getNumber("Введите минимальный номинал для фильтрации: ");
