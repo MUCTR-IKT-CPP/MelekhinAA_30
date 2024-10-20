@@ -412,7 +412,6 @@ class Scene {
             }
         }
 
-    private:
         /*
         * Генерация случайного типа фигуры.
         *
@@ -434,8 +433,8 @@ class Scene {
         Figure createRandomFigure(const std::string& type) {
             double x = rand() % static_cast<int>(width);
             double y = rand() % static_cast<int>(height);
-            double vx = (rand() % 200 - 100) / 100.0; // скорость от -1 до 1
-            double vy = (rand() % 200 - 100) / 100.0;
+            double vx = (rand() % 201 - 100) / 100.0; // скорость от -1 до 1
+            double vy = (rand() % 201 - 100) / 100.0;
 
             if (type == "Hexagon") {
                 return Figure(new Hexagon(x, y, rand() % 10 + 1, vx, vy), "Hexagon");
@@ -443,8 +442,7 @@ class Scene {
                 return Figure(new Square(x, y, rand() % 10 + 1, vx, vy), "Square");
             } else if (type == "Circle") {
                 return Figure(new Circle(x, y, rand() % 10 + 1, vx, vy), "Circle");
-            }
-            return Figure(nullptr, "Unknown"); // Невозможный тип фигуры
+            } 
         }
 
         /*
@@ -515,8 +513,8 @@ int main() {
         scene.addRandomFigure();
     }
     
-    std::cout << "Суммарная площадь всех фигур: " << scene.totalArea() << std::endl;
     scene.simulateMovement(SIMULATION_TIME, TIME_STEP);
+    std::cout << "Суммарная площадь всех фигур: " << scene.totalArea() << std::endl;
 
     return 0;
 }
