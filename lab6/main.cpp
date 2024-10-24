@@ -109,7 +109,6 @@ public:
      */
     double getChance() {
         double chance = static_cast<double>(rand()) / RAND_MAX;
-        chance =  0.5 + chance * 0.5; 
         if (size <= 25) {
             chance += 0.2;
         } else {
@@ -143,7 +142,6 @@ public:
      */
     double getChance() {
         double chance = static_cast<double>(rand()) / RAND_MAX;
-        chance =  0.5 + chance * 0.5; 
         if (size <= 25) {
             chance += 0.2;
         } else {
@@ -177,7 +175,6 @@ public:
      */
     double getChance() {
         double chance = static_cast<double>(rand()) / RAND_MAX;
-        chance =  0.5 + chance * 0.5; 
         if (size <= 25) {
             chance += 0.2;
         } else {
