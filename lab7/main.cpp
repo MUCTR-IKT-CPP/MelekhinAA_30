@@ -9,13 +9,14 @@
  */
 template <typename T>
 class Queue {
-public:
+private:
     T* data;            // Массив для хранения данных
     size_t capacity;    // Вместимость очереди
     size_t size;        // Текущий размер очереди
     size_t front;       // Индекс начала очереди
     size_t rear;        // Индекс конца очереди
 
+public:
     /**
      * @brief Изменяет размер массива для хранения данных.
      * @param newCapacity Новая вместимость очереди.
@@ -91,6 +92,17 @@ public:
      */
     size_t getSize() const {
         return size;
+    }
+
+    /**
+     * @brief Выводит содержимое очереди на экран.
+     */
+    void printQueue() const {
+        std::cout << "Очередь содержит: ";
+        for (const auto& el : *this) {
+            std::cout << el << " ";
+        }
+        std::cout << std::endl;
     }
 
     // Итератор для обхода элементов очереди
@@ -169,18 +181,6 @@ int getNumber(const std::string &message) {
     return number;
 }
 
-/**
- * @brief Выводит содержимое очереди на экран.
- * @param queue Очередь, которую необходимо вывести.
- */
-void printQueue(const Queue<int> &queue) {
-    std::cout << "Очередь содержит: ";
-    for (const auto &el : queue) {
-        std::cout << el << " ";
-    }
-    std::cout << std::endl;
-}
-
 int main() {
     srand(time(NULL));
     Queue<int> q;
@@ -190,11 +190,12 @@ int main() {
         q.enqueue(rand() % 100);
     }
 
-    printQueue(q);
-    q.dequeue(); 
-    printQueue(q);
-    std::cout << "Первый элемент: " << q.frontElement() << std::endl; 
+    q.printQueue();
+    q.dequeue();
+    q.printQueue();
+    std::cout << "Первый элемент: " << q.frontElement() << std::endl;
 
     return 0;
 }
+
 
