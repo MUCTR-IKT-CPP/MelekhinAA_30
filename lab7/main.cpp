@@ -57,22 +57,22 @@ public:
     /**
      * @brief Получает элемент из начала очереди (без удаления).
      * @return Ссылка на первый элемент очереди.
-     * @throws std::out_of_range Если очередь пуста.
      */
     T& frontElement() const {
         if (isEmpty()) {
-            throw std::out_of_range("Пустая очередь!");
+            std::cout << "Пустая очередь!" << std::endl;
+            return -1;
         }
         return data[front];
     }
 
     /**
      * @brief Удаляет элемент из начала очереди.
-     * @throws std::out_of_range Если очередь пуста.
      */
     void dequeue() {
         if (isEmpty()) {
-            throw std::out_of_range("Пустая очередь!");
+            std::cout << "Пустая очередь!" << std::endl;
+            return -1;
         }
         front = (front + 1) % capacity;
         size--;
@@ -185,15 +185,15 @@ int main() {
     srand(time(NULL));
     Queue<int> q;
     const int N = getNumber("Введите количество элементов: ");
-
     for (int i = 0; i < N; i++){
         q.enqueue(rand() % 100);
     }
 
     q.printQueue();
     q.dequeue();
+    std::cout << "Удалили первый элемент очереди" << std::endl;
     q.printQueue();
-    std::cout << "Первый элемент: " << q.frontElement() << std::endl;
+    std::cout << "Первый элемент (без удаления): " << q.frontElement() << std::endl;
 
     return 0;
 }
