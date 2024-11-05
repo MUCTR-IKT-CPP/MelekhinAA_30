@@ -55,7 +55,6 @@ public:
      * @return true, если магазин полон, иначе false
      */
     bool isFull() { return cartridges.size() == capacity; }
-
     /**
      * Заряжает патрон в магазин, если он не полон
      * @param cartridge - патрон для добавления
