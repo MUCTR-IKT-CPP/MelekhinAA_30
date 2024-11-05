@@ -7,14 +7,14 @@
 #include <chrono>
 #include <thread>
 
-// Класс "Патрон"
 class Cartridge {
-    std::string type; // Тип патрона в виде строки
+private:
+    std::string type; 
 
 public:
     /**
      * Конструктор класса Cartridge
-     * @param type - тип патрона ("Subsonic", "Supersonic", или "Tracer")
+     * @param type - тип патрона ("Дозвуковой", "Обычный", или "Трассирующий")
      */
     Cartridge(const std::string& type) : type(type) {}
 
@@ -22,11 +22,11 @@ public:
      * Отображает эффект выстрела патрона в консоль
      */
     void displayEffect() const {
-        if (type == "Subsonic") {
+        if (type == "Дозвуковой") {
             std::cout << "Тихий звук выстрела (дозвуковой)\n";
-        } else if (type == "Supersonic") {
+        } else if (type == "Обычный") {
             std::cout << "Стандартный звук выстрела (обычный)\n";
-        } else if (type == "Tracer") {
+        } else if (type == "Трассирующий") {
             std::cout << "Стандартный звук и подсветка траектории (трассирующий)\n";
         }
     }
@@ -38,8 +38,8 @@ public:
     const std::string& getType() const { return type; }
 };
 
-// Класс "Магазин"
 class Magazine {
+private:
     std::stack<Cartridge> cartridges;
     const int capacity = 30;
 
@@ -48,13 +48,13 @@ public:
      * Проверяет, пуст ли магазин
      * @return true, если магазин пуст, иначе false
      */
-    bool isEmpty() const { return cartridges.empty(); }
+    bool isEmpty() { return cartridges.empty(); }
 
     /**
      * Проверяет, полон ли магазин
      * @return true, если магазин полон, иначе false
      */
-    bool isFull() const { return cartridges.size() == capacity; }
+    bool isFull() { return cartridges.size() == capacity; }
 
     /**
      * Заряжает патрон в магазин, если он не полон
@@ -74,13 +74,10 @@ public:
      * @return извлеченный патрон
      */
     Cartridge unloadCartridge(int& unloadTime) {
-        if (!isEmpty()) {
-            Cartridge cartridge = cartridges.top();
-            cartridges.pop();
-            unloadTime += 1;  // Время на изъятие патрона (1 ед. времени)
-            return cartridge;
-        }
-        throw std::runtime_error("Магазин пуст");
+        Cartridge cartridge = cartridges.top();
+        cartridges.pop();
+        unloadTime += 1;  // Время на изъятие патрона (1 ед. времени)
+        return cartridge;
     }
 };
 
@@ -104,7 +101,7 @@ public:
      * Проверяет, можно ли произвести выстрел
      * @return true, если магазин вставлен и не пуст, иначе false
      */
-    bool canShoot() const { return magazine && !magazine->isEmpty(); }
+    bool canShoot() { return magazine && !magazine->isEmpty(); }
 
     /**
      * Выполняет выстрел, если это возможно
@@ -116,15 +113,14 @@ public:
      */
     void shoot(int& shootTime, int& shotsFired, int& subsonicCount, int& supersonicCount, int& tracerCount) {
         if (canShoot()) {
-            Cartridge cartridge = magazine->unloadCartridge(shootTime); // Извлекаем патрон
+            Cartridge cartridge = magazine->unloadCartridge(shootTime); 
             shootTime += 1;  // Время на выстрел (1 ед. времени)
-            cartridge.displayEffect(); // Показать эффект
+            cartridge.displayEffect(); 
             shotsFired++;
 
-            // Обновление статистики по типам патронов
-            if (cartridge.getType() == "Subsonic") subsonicCount++;
-            else if (cartridge.getType() == "Supersonic") supersonicCount++;
-            else if (cartridge.getType() == "Tracer") tracerCount++;
+            if (cartridge.getType() == "Дозвуковой") subsonicCount++;
+            else if (cartridge.getType() == "Обычный") supersonicCount++;
+            else if (cartridge.getType() == "Трассирующий") tracerCount++;
         } else {
             std::cout << "Магазин пуст!\n";
         }
@@ -151,7 +147,7 @@ int getNumber(const std::string &message) {
 std::vector<Cartridge> generateCartridgeBox(int totalCartridges) {
     std::vector<Cartridge> box;
 
-    std::string cartridgeTypes[] = {"Subsonic", "Supersonic", "Tracer"};
+    std::string cartridgeTypes[] = {"Дозвуковой", "Обычный", "Трассирующий"};
     for (int i = 0; i < totalCartridges; ++i) {
         std::string type = cartridgeTypes[std::rand() % 3];
         box.emplace_back(type);
@@ -160,9 +156,7 @@ std::vector<Cartridge> generateCartridgeBox(int totalCartridges) {
 }
 
 int main() {
-    std::srand(static_cast<unsigned int>(std::time(nullptr))); // Инициализация генератора случайных чисел
-
-    // Получаем общее количество патронов от пользователя
+    srand(time(NULL)); 
     int totalCartridges = getNumber("Введите общее количество патронов: ");
     
     Weapon weapon;
@@ -172,33 +166,24 @@ int main() {
     int subsonicCount = 0;
     int supersonicCount = 0;
     int tracerCount = 0;
-
-    // Генерируем коробку патронов
     std::vector<Cartridge> cartridgeBox = generateCartridgeBox(totalCartridges);
 
-    // Стрельба пока есть патроны
     while (!cartridgeBox.empty()) {
         Magazine magazine;
-
-        // Заряжаем магазин из коробки патронов
         for (int j = 0; j < 30 && !cartridgeBox.empty(); ++j) {
             magazine.loadCartridge(cartridgeBox.back(), totalLoadTime);
             cartridgeBox.pop_back();
         }
 
-        // Вставляем магазин в оружие
         weapon.insertMagazine(&magazine);
 
-        // Стрельба из магазина
         while (weapon.canShoot()) {
             weapon.shoot(totalShootTime, totalShots, subsonicCount, supersonicCount, tracerCount);
         }
 
-        // Убираем пустой магазин
         weapon.removeMagazine();
     }
 
-    // Выводим статистику
     std::cout << "\n--- Статистика ---\n";
     std::cout << "Суммарное количество отстрелянных патронов: " << totalShots << "\n";
     std::cout << "Суммарное количество заряженных магазинов: " << (totalShots + 29) / 30 << "\n"; // Округление вверх
