@@ -11,17 +11,12 @@
 // Компаратор для комплексных чисел с округлением до 2 знаков после запятой
 struct ComplexComparator {
     bool operator()(const std::complex<double>& a, const std::complex<double>& b) const {
-        if (std::abs(a) < std::abs(b)) {
-            return true;
-        } else if (std::abs(a) > std::abs(b)) {
-            return false;
-        }
-        return a.real() < b.real();
+        return std::abs(a) < std::abs(b);
     }
 };
 
 // Функция для округления комплексного числа до 2 знаков после запятой
-std::complex<double> roundToTwoDecimalPlaces(const std::complex<double>& number) {
+std::complex<double> roundComplex(const std::complex<double>& number) {
     double realPart = std::round(number.real() * 100.0) / 100.0;
     double imagPart = std::round(number.imag() * 100.0) / 100.0;
     return {realPart, imagPart};
@@ -35,14 +30,14 @@ private:
 public:
     // Конструктор, принимающий коэффициенты типа complex<double> и сразу находящий корни
     QuadraticEquation(std::complex<double> a, std::complex<double> b, std::complex<double> c) 
-        : a(roundToTwoDecimalPlaces(a)), b(roundToTwoDecimalPlaces(b)), c(roundToTwoDecimalPlaces(c)) {
+        : a(roundComplex(a)), b(roundComplex(b)), c(roundComplex(c)) {
 
         if (a != std::complex<double>(0.0, 0.0)) {
             std::complex<double> discriminant = b * b - std::complex<double>(4.0) * a * c;
-            root1 = roundToTwoDecimalPlaces((-b + std::sqrt(discriminant)) / (std::complex<double>(2.0) * a));
-            root2 = roundToTwoDecimalPlaces((-b - std::sqrt(discriminant)) / (std::complex<double>(2.0) * a));
+            root1 = roundComplex((-b + std::sqrt(discriminant)) / (std::complex<double>(2.0) * a));
+            root2 = roundComplex((-b - std::sqrt(discriminant)) / (std::complex<double>(2.0) * a));
         } else if (b != std::complex<double>(0.0, 0.0)) {
-            root1 = roundToTwoDecimalPlaces(-c / b);
+            root1 = roundComplex(-c / b);
             root2 = std::nullopt;
         } else {
             if (c == std::complex<double>(0.0, 0.0)) {
@@ -87,7 +82,7 @@ public:
         });
     }
 
-    static int countRootsLessThan(const std::vector<QuadraticEquation>& equations, const std::complex<double>& number) {
+    static int countRoots(const std::vector<QuadraticEquation>& equations, const std::complex<double>& number) {
         return std::count_if(equations.begin(), equations.end(), [&](const QuadraticEquation& eq) {
             return (eq.root1 && std::abs(*eq.root1) < std::abs(number)) +
                    (eq.root2 && std::abs(*eq.root2) < std::abs(number));
@@ -110,7 +105,7 @@ public:
     }
 
     // Новый статический метод для сортировки по сумме корней
-    static void sortBySumOfRoots(std::vector<QuadraticEquation>& equations) {
+    static void sortRoots(std::vector<QuadraticEquation>& equations) {
         std::sort(equations.begin(), equations.end(), [](const QuadraticEquation& eq1, const QuadraticEquation& eq2) {
             auto sum1 = eq1.sumOfRoots();
             auto sum2 = eq2.sumOfRoots();
@@ -125,10 +120,9 @@ public:
 
 // Функция для генерации случайных дробных комплексных чисел
 std::complex<double> generateRandomComplex() {
-    static std::random_device rd;
-    static std::mt19937 gen(rd());
-    static std::uniform_real_distribution<double> dis(-10.0, 10.0);
-    return roundToTwoDecimalPlaces({dis(gen), dis(gen)});
+    double realPart = ((static_cast<double>(rand()) / RAND_MAX) * 20.0) - 10.0;
+    double imagPart = ((static_cast<double>(rand()) / RAND_MAX) * 20.0) - 10.0;
+    return roundComplex({realPart, imagPart});
 }
 
 double getDouble(const std::string &message) {
@@ -139,6 +133,7 @@ double getDouble(const std::string &message) {
 }
 
 int main() {
+    srand((time(NULL)));
     int N;
     std::cout << "Введите количество уравнений: ";
     std::cin >> N;
@@ -156,7 +151,7 @@ int main() {
     std::copy(equations.begin(), equations.end(), std::ostream_iterator<QuadraticEquation>(std::cout, "\n"));
 
     // Сортировка уравнений по возрастанию суммы корней
-    QuadraticEquation::sortBySumOfRoots(equations);
+    QuadraticEquation::sortRoots(equations);
 
     std::cout << "\nСписок уравнений после сортировки по возрастанию суммы корней:\n";
     std::copy(equations.begin(), equations.end(), std::ostream_iterator<QuadraticEquation>(std::cout, "\n"));
@@ -178,7 +173,7 @@ int main() {
     imaginaryPart = getDouble("Введите мнимую часть: "); 
     std::complex<double> threshold(realPart, imaginaryPart);
 
-    int count = QuadraticEquation::countRootsLessThan(equations, threshold);
+    int count = QuadraticEquation::countRoots(equations, threshold);
     std::cout << "Количество корней, модуль которых меньше заданного числа: " << count << std::endl;
 
     std::vector<std::complex<double>> uniqueRoots = QuadraticEquation::uniqueRoots(equations);
