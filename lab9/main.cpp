@@ -8,14 +8,12 @@
 #include <set>
 #include <cmath>
 
-// Компаратор для комплексных чисел с округлением до 2 знаков после запятой
 struct ComplexComparator {
     bool operator()(const std::complex<double>& a, const std::complex<double>& b) const {
         return std::abs(a) < std::abs(b);
     }
 };
 
-// Функция для округления комплексного числа до 2 знаков после запятой
 std::complex<double> roundComplex(const std::complex<double>& number) {
     double realPart = std::round(number.real() * 100.0) / 100.0;
     double imagPart = std::round(number.imag() * 100.0) / 100.0;
@@ -28,8 +26,7 @@ private:
     std::optional<std::complex<double>> root1, root2;
 
 public:
-    // Конструктор, принимающий коэффициенты типа complex<double> и сразу находящий корни
-    QuadraticEquation(std::complex<double> a, std::complex<double> b, std::complex<double> c) 
+    QuadraticEquation(std::complex<double> a, std::complex<double> b, std::complex<double> c)
         : a(roundComplex(a)), b(roundComplex(b)), c(roundComplex(c)) {
 
         if (a != std::complex<double>(0.0, 0.0)) {
@@ -48,9 +45,11 @@ public:
         }
     }
 
+    std::optional<std::complex<double>> getRoot1() const { return root1; }
+    std::optional<std::complex<double>> getRoot2() const { return root2; }
+
     friend std::ostream& operator<<(std::ostream& os, const QuadraticEquation& eq) {
         os << "Уравнение: (" << eq.a << ")x^2 + (" << eq.b << ")x + (" << eq.c << ") = 0\n";
-        
         if (eq.root1 && eq.root2) {
             os << "Корни уравнения: x1 = " << *eq.root1 << ", x2 = " << *eq.root2;
         } else if (eq.root1) {
@@ -66,57 +65,59 @@ public:
         return (root1 && *root1 == number) || (root2 && *root2 == number);
     }
 
-    // Новый метод для получения суммы корней
     std::optional<std::complex<double>> sumOfRoots() const {
         if (root1 && root2) {
             return *root1 + *root2;
         } else if (root1) {
             return *root1;
+        } else if (root2){
+            return *root2;
         }
         return std::nullopt;
     }
-
-    static bool hasRoot(const std::vector<QuadraticEquation>& equations, const std::complex<double>& number) {
-        return std::any_of(equations.begin(), equations.end(), [&](const QuadraticEquation& eq) {
-            return eq.containsRoot(number);
-        });
-    }
-
-    static int countRoots(const std::vector<QuadraticEquation>& equations, const std::complex<double>& number) {
-        return std::count_if(equations.begin(), equations.end(), [&](const QuadraticEquation& eq) {
-            return (eq.root1 && std::abs(*eq.root1) < std::abs(number)) +
-                   (eq.root2 && std::abs(*eq.root2) < std::abs(number));
-        });
-    }
-
-    static std::vector<std::complex<double>> uniqueRoots(const std::vector<QuadraticEquation>& equations) {
-        std::set<std::complex<double>, ComplexComparator> uniqueRootsSet;
-
-        for (const auto& eq : equations) {
-            if (eq.root1) {
-                uniqueRootsSet.insert(*eq.root1);
-            }
-            if (eq.root2) {
-                uniqueRootsSet.insert(*eq.root2);
-            }
-        }
-
-        return std::vector<std::complex<double>>(uniqueRootsSet.begin(), uniqueRootsSet.end());
-    }
-
-    // Новый статический метод для сортировки по сумме корней
-    static void sortRoots(std::vector<QuadraticEquation>& equations) {
-        std::sort(equations.begin(), equations.end(), [](const QuadraticEquation& eq1, const QuadraticEquation& eq2) {
-            auto sum1 = eq1.sumOfRoots();
-            auto sum2 = eq2.sumOfRoots();
-
-            if (!sum1) return false;  // Если у первого уравнения нет корней, оно считается больше
-            if (!sum2) return true;   // Если у второго нет корней, первое идет раньше
-
-            return std::abs(*sum1) < std::abs(*sum2);
-        });
-    }
 };
+
+bool hasRoot(const std::vector<QuadraticEquation>& equations, const std::complex<double>& number) {
+    return std::any_of(equations.begin(), equations.end(), [&](const QuadraticEquation& eq) {
+        return eq.containsRoot(number);
+    });
+}
+
+int countRoots(const std::vector<QuadraticEquation>& equations, const std::complex<double>& number) {
+    return std::count_if(equations.begin(), equations.end(), [&](const QuadraticEquation& eq) {
+        int count = 0;
+        if (eq.getRoot1() && std::abs(*eq.getRoot1()) < std::abs(number)) count++;
+        if (eq.getRoot2() && std::abs(*eq.getRoot2()) < std::abs(number)) count++;
+        return count;
+    });
+}
+
+std::vector<std::complex<double>> uniqueRoots(const std::vector<QuadraticEquation>& equations) {
+    std::set<std::complex<double>, ComplexComparator> uniqueRootsSet;
+
+    for (const QuadraticEquation& eq : equations) {
+        if (eq.getRoot1()) {
+            uniqueRootsSet.insert(*eq.getRoot1());
+        }
+        if (eq.getRoot2()) {
+            uniqueRootsSet.insert(*eq.getRoot2());
+        }
+    }
+
+    return std::vector<std::complex<double>>(uniqueRootsSet.begin(), uniqueRootsSet.end());
+}
+
+void sortRoots(std::vector<QuadraticEquation>& equations) {
+    std::sort(equations.begin(), equations.end(), [](const QuadraticEquation& eq1, const QuadraticEquation& eq2) {
+        std::optional<std::complex<double>> sum1 = eq1.sumOfRoots();
+        std::optional<std::complex<double>> sum2 = eq2.sumOfRoots();
+
+        if (!sum1) return false;
+        if (!sum2) return true;
+
+        return std::abs(*sum1) < std::abs(*sum2);
+    });
+}
 
 // Функция для генерации случайных дробных комплексных чисел
 std::complex<double> generateRandomComplex() {
@@ -150,19 +151,12 @@ int main() {
     std::cout << "\nСписок уравнений до сортировки:\n";
     std::copy(equations.begin(), equations.end(), std::ostream_iterator<QuadraticEquation>(std::cout, "\n"));
 
-    // Сортировка уравнений по возрастанию суммы корней
-    QuadraticEquation::sortRoots(equations);
-
-    std::cout << "\nСписок уравнений после сортировки по возрастанию суммы корней:\n";
-    std::copy(equations.begin(), equations.end(), std::ostream_iterator<QuadraticEquation>(std::cout, "\n"));
-
-    // Пример работы с остальными методами, оставленными без изменений
     std::cout << "\nВведите комплексное число для поиска корня (формат: a + bi):" << std::endl;
     double realPart = getDouble("Введите вещественную часть: "); 
     double imaginaryPart = getDouble("Введите мнимую часть: ");
     std::complex<double> userInput(realPart, imaginaryPart);
 
-    if (QuadraticEquation::hasRoot(equations, userInput)) {
+    if (hasRoot(equations, userInput)) {
         std::cout << "Данное комплексное число является корнем хотя бы одного уравнения." << std::endl;
     } else {
         std::cout << "Данное комплексное число не является корнем ни одного уравнения." << std::endl;
@@ -173,14 +167,18 @@ int main() {
     imaginaryPart = getDouble("Введите мнимую часть: "); 
     std::complex<double> threshold(realPart, imaginaryPart);
 
-    int count = QuadraticEquation::countRoots(equations, threshold);
+    int count = countRoots(equations, threshold);
     std::cout << "Количество корней, модуль которых меньше заданного числа: " << count << std::endl;
 
-    std::vector<std::complex<double>> uniqueRoots = QuadraticEquation::uniqueRoots(equations);
+    std::vector<std::complex<double>> uniqueRootsList = uniqueRoots(equations);
     std::cout << "\nУникальные корни уравнений:" << std::endl;
-    for (const auto& root : uniqueRoots) {
+    for (const std::complex<double>& root : uniqueRootsList) {
         std::cout << root << std::endl;
     }
+    
+    sortRoots(equations);
+    std::cout << "\nСписок уравнений после сортировки по возрастанию суммы корней:\n";
+    std::copy(equations.begin(), equations.end(), std::ostream_iterator<QuadraticEquation>(std::cout, "\n"));
 
     return 0;
 }
