@@ -201,6 +201,7 @@ void sortRoots(std::vector<QuadraticEquation>& equations) {
  * @return Сгенерированное случайное комплексное число.
  */
 std::complex<double> generateRandomComplex() {
+    srand((time(NULL)));
     double realPart = ((static_cast<double>(rand()) / RAND_MAX) * 20.0) - 10.0;
     double imagPart = ((static_cast<double>(rand()) / RAND_MAX) * 20.0) - 10.0;
     return roundComplex({realPart, imagPart});
@@ -220,7 +221,6 @@ double getDouble(const std::string &message) {
 }
 
 int main() {
-    srand((time(NULL)));
     int N;
     std::cout << "Введите количество уравнений: ";
     std::cin >> N;
